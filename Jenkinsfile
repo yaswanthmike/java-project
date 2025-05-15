@@ -1,5 +1,5 @@
 pipeline {
- agent any
+  agent any
   environment {
     registry = "ybmsr/java-project"
     registryCredential = 'dockerhub_credentials'
@@ -7,26 +7,27 @@ pipeline {
   }
   stages {
     stage('Building image') {
-      steps{
+      steps {
         script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+          dockerImage = docker.build("${registry}:${BUILD_NUMBER}")
         }
       }
     }
-    stage('push image') {
-      steps{
+    stage('Push image') {
+      steps {
         script {
-          docker.withRegistry( '', registryCredential ) {
+          docker.withRegistry('https://index.docker.io/v1/', registryCredential) {
             dockerImage.push()
           }
         }
       }
     }
     stage('Remove old docker image') {
-      steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
+      steps {
+        sh "docker rmi ${registry}:${BUILD_NUMBER}"
       }
     }
   }
 }
+
 
